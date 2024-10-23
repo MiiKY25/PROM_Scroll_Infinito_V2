@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var etTask:EditText
     lateinit var rvTasks:RecyclerView
 
+    var tasks = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initListeners(){
-
+        //btnAddTask.setOnClickListener{ addTask() }
     }
 
     private fun initView(){
