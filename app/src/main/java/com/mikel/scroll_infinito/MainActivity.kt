@@ -6,6 +6,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mikel.scroll_infinito.TaskApplication.Companion.prefs
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
+        tasks = prefs.getTasks()
         rvTasks.layoutManager = LinearLayoutManager(this)
         adapter = TaskAdapter(tasks) { deleteTask(it) }
         rvTasks.adapter=adapter
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private fun deleteTask(position: Int){
         tasks.removeAt(position)
         adapter.notifyDataSetChanged()
+        prefs.saveTasks(tasks)
     }
 
     private fun initListeners(){
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private fun addTask(){
         val taskToAdd:String = etTask.text.toString()
         tasks.add(taskToAdd)
+        prefs.saveTasks(tasks)
         adapter.notifyDataSetChanged()
         etTask.setText("")
     }
