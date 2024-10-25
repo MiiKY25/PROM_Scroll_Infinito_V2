@@ -57,10 +57,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun addTask(){
         val taskToAdd:String = etTask.text.toString()
-        tasks.add(taskToAdd)
-        prefs.saveTasks(tasks)
-        adapter.notifyDataSetChanged()
-        etTask.setText("")
+        if (!taskToAdd.isEmpty()){
+            tasks.add(taskToAdd)
+            prefs.saveTasks(tasks)
+            adapter.notifyDataSetChanged()
+            etTask.setText("")
+        }
     }
 
     private fun initView(){
