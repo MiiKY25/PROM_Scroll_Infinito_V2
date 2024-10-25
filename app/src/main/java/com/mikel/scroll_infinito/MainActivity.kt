@@ -1,5 +1,6 @@
 package com.mikel.scroll_infinito
 
+import android.icu.text.Transliterator.Position
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -35,8 +36,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         rvTasks.layoutManager = LinearLayoutManager(this)
-        adapter = TaskAdapter(tasks)
+        adapter = TaskAdapter(tasks) { deleteTask(it) }
         rvTasks.adapter=adapter
+    }
+
+    private fun deleteTask(position: Int){
+        tasks.removeAt(position)
+        adapter.notifyDataSetChanged()
     }
 
     private fun initListeners(){
