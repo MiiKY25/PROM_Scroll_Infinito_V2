@@ -1,13 +1,15 @@
 package com.mikel.scroll_infinito
 
+import android.graphics.Canvas
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 
 /**
  * MainActivity es la actividad principal de la aplicación que permite al usuario gestionar una lista de tareas.
@@ -21,7 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: TaskAdapter // Adaptador para gestionar la lista de tareas
     private var mediaPlayer: MediaPlayer? = null // Declarar el MediaPlayer para reproducir sonidos
-
 
     var tasks = mutableListOf<Task>() // Lista mutable que contiene las tareas
 
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         rvTasks.layoutManager = LinearLayoutManager(this) // Configurar el diseño lineal
         adapter = TaskAdapter(tasks) { deleteTask(it) } // Crear el adaptador con la lista de tareas
         rvTasks.adapter = adapter // Asignar el adaptador al RecyclerView
+        attachSwipeToDelete() // Activar el deslizamiento para eliminar
     }
 
     /**
@@ -98,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
             etTask.setText("") // Limpiar el campo de texto
             playAddTaskSound()
-        }else{
+        } else {
             etTask.error = "Escribe una tarea"
             playDeleteTaskSound()
         }
@@ -139,7 +141,52 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar el MediaPlayer cuando la actividad se destruya
-        playDeleteTaskSound()
+        mediaPlayer?.release() // Liberar el MediaPlayer cuando la actividad se destruya
+    }
+
+    /**
+     * Configura el gesto de deslizamiento para eliminar una tarea.
+     */
+    private fun attachSwipeToDelete() {
+        val itemTouchHelper = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false // No se utiliza el movimiento vertical
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    val itemView = viewHolder.itemView // Obtiene la vista del ítem
+                    itemView.setBackgroundColor(Color.RED) // Cambia el fondo a rojo
+                    itemView.translationX = dX // Traducción en X
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                deleteTask(position) // Llama a la función de eliminación
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT) // Restablece el fondo
+            }
+        }
+
+        // Asocia el ItemTouchHelper al RecyclerView
+        ItemTouchHelper(itemTouchHelper).attachToRecyclerView(rvTasks)
     }
 }
