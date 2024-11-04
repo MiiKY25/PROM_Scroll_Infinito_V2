@@ -20,10 +20,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val createTable = "CREATE TABLE $DATABASE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$COLUMN_TAREA TEXT)"
+        val createTable = "CREATE TABLE $TABLA_TAREA ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TAREA TEXT)"
         db.execSQL(createTable)
     }
+
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLA_TAREA")

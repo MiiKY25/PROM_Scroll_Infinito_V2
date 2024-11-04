@@ -12,10 +12,6 @@ class TaskApplication : Application() {
 
     lateinit var dbHelper: DatabaseHelper
 
-    companion object {
-        lateinit var prefs: Preferences // Instancia global de Preferences
-    }
-
     /**
      * Método llamado al crear la aplicación.
      * Inicializa la instancia de Preferences utilizando el contexto de la aplicación.
