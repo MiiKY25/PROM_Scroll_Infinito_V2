@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             tasks.add(newTask) // Añadir la nueva tarea a la lista
             adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
             etTask.setText("") // Limpiar el campo de texto
+            playAddTaskSound()
         }else{
             etTask.error = "Escribe una tarea"
             playDeleteTaskSound()
