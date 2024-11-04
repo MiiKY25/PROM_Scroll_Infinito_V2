@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var adapter: TaskAdapter // Adaptador para gestionar la lista de tareas
     lateinit var mediaPlayer: MediaPlayer // Declarar el MediaPlayer para reproducir sonidos
 
-    var tasks = mutableListOf<String>() // Lista mutable que contiene las tareas
+    var tasks = mutableListOf<Task>() // Lista mutable que contiene las tareas
 
     /**
      * Método de creación de la actividad.
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
      * Configura el adaptador y el administrador de diseño.
      */
     private fun initRecyclerView() {
-        tasks = prefs.getTasks() // Obtener tareas guardadas
+        tasks = (application as TaskApplication).dbHelper.getTodasTareas() // Carga de la base de datos
         rvTasks.layoutManager = LinearLayoutManager(this) // Configurar el diseño lineal
         adapter = TaskAdapter(tasks) { deleteTask(it) } // Crear el adaptador con la lista de tareas
         rvTasks.adapter = adapter // Asignar el adaptador al RecyclerView
@@ -66,9 +66,10 @@ class MainActivity : AppCompatActivity() {
      * @param position Posición de la tarea a eliminar.
      */
     private fun deleteTask(position: Int) {
+        val task = tasks[position]
         tasks.removeAt(position) // Eliminar la tarea de la lista
         adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
-        prefs.saveTasks(tasks) // Guardar la lista actualizada
+        (application as TaskApplication).dbHelper.deleteTarea(task.id) // Elimina de la base de datos
 
         // Reproducir sonido de eliminación
         mediaPlayer.start()
@@ -87,10 +88,14 @@ class MainActivity : AppCompatActivity() {
      * Actualiza el RecyclerView y guarda la lista de tareas.
      */
     private fun addTask() {
-        val taskToAdd: String = etTask.text.toString() // Obtener el texto de la tarea
+        val taskToAdd = etTask.text.toString().trim() // Obtener el texto de la tarea
         if (taskToAdd.isNotEmpty()) { // Verificar que el campo no esté vacío
-            tasks.add(taskToAdd) // Añadir la nueva tarea a la lista
-            prefs.saveTasks(tasks) // Guardar la lista actualizada
+            val dbHelper = (application as TaskApplication).dbHelper
+            val taskId = dbHelper.addTarea(taskToAdd) // Inserta en la base de datos
+            val newTask = Task(id = taskId, tarea = taskToAdd)
+
+
+            tasks.add(newTask) // Añadir la nueva tarea a la lista
             adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
             etTask.setText("") // Limpiar el campo de texto
         }

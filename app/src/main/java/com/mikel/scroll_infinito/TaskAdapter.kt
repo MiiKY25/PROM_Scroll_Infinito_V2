@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
  * @param tasks Lista de tareas a mostrar en el RecyclerView.
  * @param onItemDone Función que se ejecuta al completar una tarea, recibe la posición del elemento.
  */
-class TaskAdapter(private val tasks: List<String>, private val onItemDone: (Int) -> Unit) : RecyclerView.Adapter<TaskViewHolder>() {
+class TaskAdapter(private val tasks: MutableList<Task>, private val onItemDone: (Int) -> Unit) : RecyclerView.Adapter<TaskViewHolder>() {
 
     /**
      * Crea un nuevo ViewHolder para una tarea.
@@ -39,6 +39,6 @@ class TaskAdapter(private val tasks: List<String>, private val onItemDone: (Int)
      * @param position La posición de la tarea en la lista.
      */
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.render(tasks[position], onItemDone) // Renderiza la tarea en el ViewHolder
+        holder.render(tasks[position].tarea, onItemDone) // Renderiza la tarea en el ViewHolder
     }
 }

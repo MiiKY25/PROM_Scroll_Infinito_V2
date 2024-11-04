@@ -10,6 +10,8 @@ import android.app.Application
  */
 class TaskApplication : Application() {
 
+    lateinit var dbHelper: DatabaseHelper
+
     companion object {
         lateinit var prefs: Preferences // Instancia global de Preferences
     }
@@ -20,6 +22,6 @@ class TaskApplication : Application() {
      */
     override fun onCreate() {
         super.onCreate()
-        prefs = Preferences(baseContext) // Inicializar Preferences con el contexto de la aplicación
+        dbHelper = DatabaseHelper(this) // Inicializa el helper de la base de datos
     }
 }
