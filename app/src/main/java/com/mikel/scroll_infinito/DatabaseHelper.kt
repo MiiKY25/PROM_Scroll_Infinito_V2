@@ -9,7 +9,7 @@ class DatabaseHelper {
 
     data class Task(
         val id: Long,
-        val description: String
+        val tarea: String
     )
 
     class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -45,8 +45,8 @@ class DatabaseHelper {
             with(cursor) {
                 while (moveToNext()) {
                     val id = getLong(getColumnIndexOrThrow(COLUMN_ID))
-                    val description = getString(getColumnIndexOrThrow(COLUMN_TAREA))
-                    tasks.add(Task(id, description))
+                    val tarea = getString(getColumnIndexOrThrow(COLUMN_TAREA))
+                    tasks.add(Task(id, tarea))
                 }
                 close()
             }
