@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var rvTasks: RecyclerView // RecyclerView para mostrar la lista de tareas
 
     lateinit var adapter: TaskAdapter // Adaptador para gestionar la lista de tareas
-    lateinit var mediaPlayer: MediaPlayer // Declarar el MediaPlayer para reproducir sonidos
+    private var mediaPlayer: MediaPlayer? = null // Declarar el MediaPlayer para reproducir sonidos
+
 
     var tasks = mutableListOf<Task>() // Lista mutable que contiene las tareas
 
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         initUi()
 
         // Inicializar MediaPlayer con el archivo de sonido
-        mediaPlayer = MediaPlayer.create(this, R.raw.delete_sound)
+        mediaPlayer = MediaPlayer.create(this, R.raw.add_task_sound)
     }
 
     /**
@@ -71,8 +72,7 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
         (application as TaskApplication).dbHelper.deleteTarea(task.id) // Elimina de la base de datos
 
-        // Reproducir sonido de eliminación
-        mediaPlayer.start()
+        playDeleteTaskSound()
     }
 
     /**
@@ -94,11 +94,33 @@ class MainActivity : AppCompatActivity() {
             val taskId = dbHelper.addTarea(taskToAdd) // Inserta en la base de datos
             val newTask = Task(id = taskId, tarea = taskToAdd)
 
-
             tasks.add(newTask) // Añadir la nueva tarea a la lista
             adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
             etTask.setText("") // Limpiar el campo de texto
+        }else{
+            etTask.error = "Escribe una tarea"
+            playDeleteTaskSound()
         }
+    }
+
+    /**
+     * Reproduce un sonido al añadir una tarea, liberando el MediaPlayer después de que se complete la reproducción.
+     */
+    private fun playAddTaskSound() {
+        mediaPlayer?.release()
+        mediaPlayer = MediaPlayer.create(this, R.raw.add_task_sound)
+        mediaPlayer?.start()
+        mediaPlayer?.setOnCompletionListener { it.release() }
+    }
+
+    /**
+     * Reproduce un sonido al eliminar una tarea, liberando el MediaPlayer después de que se complete la reproducción.
+     */
+    private fun playDeleteTaskSound() {
+        mediaPlayer?.release()
+        mediaPlayer = MediaPlayer.create(this, R.raw.delete_task_sound)
+        mediaPlayer?.start()
+        mediaPlayer?.setOnCompletionListener { it.release() }
     }
 
     /**
@@ -117,6 +139,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // Liberar el MediaPlayer cuando la actividad se destruya
-        mediaPlayer.release()
+        playDeleteTaskSound()
     }
 }
